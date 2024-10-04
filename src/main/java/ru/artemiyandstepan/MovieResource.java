@@ -23,17 +23,18 @@ public class MovieResource {
 
     // Получить все фильмы
     @GET
-    public Response getAllMovies(@QueryParam("sortFields") List<String> sortFields,
-                                 @QueryParam("sortOrder") String sortOrder,
-                                 @QueryParam("page") int page,
-                                 @QueryParam("size") int size,
-                                 @QueryParam("name") String nameFilter,
-                                 @QueryParam("minOscarsCount") Long minOscarsCount,
-                                 @QueryParam("maxOscarsCount") Long maxOscarsCount,
-                                 @QueryParam("minBoxOffice") Integer minBoxOffice,
-                                 @QueryParam("maxBoxOffice") Integer maxBoxOffice,
-                                 @QueryParam("genre") MovieGenre genreFilter,
-                                 @QueryParam("mpaaRating") MpaaRating mpaaRatingFilter) {
+    public Response getAllMovies(
+            @QueryParam("sortFields") List<String> sortFields,
+            @QueryParam("sortOrder") String sortOrder,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("size") @DefaultValue("10") int size,
+            @QueryParam("name") String nameFilter,
+            @QueryParam("minOscarsCount") Long minOscarsCount,
+            @QueryParam("maxOscarsCount") Long maxOscarsCount,
+            @QueryParam("minBoxOffice") Integer minBoxOffice,
+            @QueryParam("maxBoxOffice") Integer maxBoxOffice,
+            @QueryParam("genre") MovieGenre genreFilter,
+            @QueryParam("mpaaRating") MpaaRating mpaaRatingFilter){
 
         logger.info("Fetching all movies with filters");
 
@@ -86,18 +87,13 @@ public class MovieResource {
 
     // Функция для сравнения по указанному полю
     private int compareMovies(Movie movie1, Movie movie2, String field) {
-        switch (field) {
-            case "name":
-                return movie1.getName().compareTo(movie2.getName());
-            case "oscarsCount":
-                return Long.compare(movie1.getOscarsCount(), movie2.getOscarsCount());
-            case "usaBoxOffice":
-                return Integer.compare(movie1.getUsaBoxOffice(), movie2.getUsaBoxOffice());
-            case "creationDate":
-                return movie1.getCreationDate().compareTo(movie2.getCreationDate());
-            default:
-                throw new IllegalArgumentException("Invalid sort field: " + field);
-        }
+        return switch (field) {
+            case "name" -> movie1.getName().compareTo(movie2.getName());
+            case "oscarsCount" -> Long.compare(movie1.getOscarsCount(), movie2.getOscarsCount());
+            case "usaBoxOffice" -> Integer.compare(movie1.getUsaBoxOffice(), movie2.getUsaBoxOffice());
+            case "creationDate" -> movie1.getCreationDate().compareTo(movie2.getCreationDate());
+            default -> throw new IllegalArgumentException("Invalid sort field: " + field);
+        };
     }
 
     // Создать фильм
