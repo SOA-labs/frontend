@@ -34,7 +34,7 @@ public class MovieResource {
             @QueryParam("minBoxOffice") Integer minBoxOffice,
             @QueryParam("maxBoxOffice") Integer maxBoxOffice,
             @QueryParam("genre") MovieGenre genreFilter,
-            @QueryParam("mpaaRating") MpaaRating mpaaRatingFilter){
+            @QueryParam("mpaaRating") MpaaRating mpaaRatingFilter) {
 
         logger.info("Fetching all movies with filters");
 
@@ -43,24 +43,31 @@ public class MovieResource {
         // Фильтры
         if (nameFilter != null && !nameFilter.isEmpty()) {
             filteredMovies.removeIf(movie -> !movie.getName().toLowerCase().contains(nameFilter.toLowerCase()));
+            logger.info("Applied filter name: {}", nameFilter);
         }
         if (minOscarsCount != null) {
             filteredMovies.removeIf(movie -> movie.getOscarsCount() < minOscarsCount);
+            logger.info("Applied filter minOscarsCount: {}", minOscarsCount );
         }
         if (maxOscarsCount != null) {
             filteredMovies.removeIf(movie -> movie.getOscarsCount() > maxOscarsCount);
+            logger.info("Applied filter maxOscarsCount: {}", maxOscarsCount);
         }
         if (minBoxOffice != null) {
             filteredMovies.removeIf(movie -> movie.getUsaBoxOffice() < minBoxOffice);
+            logger.info("Applied filter minBoxOffice: {}", minBoxOffice);
         }
         if (maxBoxOffice != null) {
             filteredMovies.removeIf(movie -> movie.getUsaBoxOffice() > maxBoxOffice);
+            logger.info("Applied filter maxBoxOffice: {}", maxBoxOffice);
         }
         if (genreFilter != null) {
             filteredMovies.removeIf(movie -> !movie.getGenre().equals(genreFilter));
+            logger.info("Applied filter genreFilter: {}", genreFilter);
         }
         if (mpaaRatingFilter != null) {
             filteredMovies.removeIf(movie -> !movie.getMpaaRating().equals(mpaaRatingFilter));
+            logger.info("Applied filter mpaaRatingFilter: {}", mpaaRatingFilter);
         }
 
         // Сортировка по нескольким полям
@@ -68,6 +75,7 @@ public class MovieResource {
             filteredMovies.sort((movie1, movie2) -> {
                 for (String field : sortFields) {
                     int comparison = compareMovies(movie1, movie2, field);
+                    logger.info("Sorted by: {}", field);
                     if (comparison != 0) {
                         return "desc".equalsIgnoreCase(sortOrder) ? -comparison : comparison;
                     }
@@ -131,6 +139,7 @@ public class MovieResource {
         updatedMovie.setId(id);
         updatedMovie.setCreationDate(existingMovie.getCreationDate());
         movies.put(id, updatedMovie);
+        logger.info("Movie updated: {}", updatedMovie);
         return Response.ok(updatedMovie).build();
     }
 
@@ -141,6 +150,7 @@ public class MovieResource {
         if (movie == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        logger.info("Movie deleted by id {}", id);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
