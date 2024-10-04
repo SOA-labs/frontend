@@ -7,6 +7,8 @@ import ru.artemiyandstepan.model.Movie;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.artemiyandstepan.model.MovieGenre;
+import ru.artemiyandstepan.model.MpaaRating;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,17 +23,87 @@ public class MovieResource {
 
     // Получить все фильмы
     @GET
-    public Response getAllMovies() {
-        logger.info("Fetching all movies");
-        return Response.ok(new ArrayList<>(movies.values())).build();
+    public Response getAllMovies(@QueryParam("sortFields") List<String> sortFields,
+                                 @QueryParam("sortOrder") String sortOrder,
+                                 @QueryParam("page") int page,
+                                 @QueryParam("size") int size,
+                                 @QueryParam("name") String nameFilter,
+                                 @QueryParam("minOscarsCount") Long minOscarsCount,
+                                 @QueryParam("maxOscarsCount") Long maxOscarsCount,
+                                 @QueryParam("minBoxOffice") Integer minBoxOffice,
+                                 @QueryParam("maxBoxOffice") Integer maxBoxOffice,
+                                 @QueryParam("genre") MovieGenre genreFilter,
+                                 @QueryParam("mpaaRating") MpaaRating mpaaRatingFilter) {
+
+        logger.info("Fetching all movies with filters");
+
+        List<Movie> filteredMovies = new ArrayList<>(movies.values());
+
+        // Фильтры
+        if (nameFilter != null && !nameFilter.isEmpty()) {
+            filteredMovies.removeIf(movie -> !movie.getName().toLowerCase().contains(nameFilter.toLowerCase()));
+        }
+        if (minOscarsCount != null) {
+            filteredMovies.removeIf(movie -> movie.getOscarsCount() < minOscarsCount);
+        }
+        if (maxOscarsCount != null) {
+            filteredMovies.removeIf(movie -> movie.getOscarsCount() > maxOscarsCount);
+        }
+        if (minBoxOffice != null) {
+            filteredMovies.removeIf(movie -> movie.getUsaBoxOffice() < minBoxOffice);
+        }
+        if (maxBoxOffice != null) {
+            filteredMovies.removeIf(movie -> movie.getUsaBoxOffice() > maxBoxOffice);
+        }
+        if (genreFilter != null) {
+            filteredMovies.removeIf(movie -> !movie.getGenre().equals(genreFilter));
+        }
+        if (mpaaRatingFilter != null) {
+            filteredMovies.removeIf(movie -> !movie.getMpaaRating().equals(mpaaRatingFilter));
+        }
+
+        // Сортировка по нескольким полям
+        if (sortFields != null && !sortFields.isEmpty()) {
+            filteredMovies.sort((movie1, movie2) -> {
+                for (String field : sortFields) {
+                    int comparison = compareMovies(movie1, movie2, field);
+                    if (comparison != 0) {
+                        return "desc".equalsIgnoreCase(sortOrder) ? -comparison : comparison;
+                    }
+                }
+                return 0; // Если поля равны
+            });
+        }
+
+        // Постраничный вывод
+        int totalMovies = filteredMovies.size();
+        int start = Math.min(page * size, totalMovies);
+        int end = Math.min((page + 1) * size, totalMovies);
+        List<Movie> paginatedMovies = filteredMovies.subList(start, end);
+
+        return Response.ok().entity(new ResponseByPages<>(paginatedMovies, totalMovies, page, size)).build();
+    }
+
+    // Функция для сравнения по указанному полю
+    private int compareMovies(Movie movie1, Movie movie2, String field) {
+        switch (field) {
+            case "name":
+                return movie1.getName().compareTo(movie2.getName());
+            case "oscarsCount":
+                return Long.compare(movie1.getOscarsCount(), movie2.getOscarsCount());
+            case "usaBoxOffice":
+                return Integer.compare(movie1.getUsaBoxOffice(), movie2.getUsaBoxOffice());
+            case "creationDate":
+                return movie1.getCreationDate().compareTo(movie2.getCreationDate());
+            default:
+                throw new IllegalArgumentException("Invalid sort field: " + field);
+        }
     }
 
     // Создать фильм
     @POST
     public Response createMovie(Movie movie) {
-        if (movie == null || movie.getName() == null || movie.getName().isEmpty() ||
-                movie.getCoordinates() == null || movie.getOscarsCount() <= 0 ||
-                movie.getUsaBoxOffice() <= 0) {
+        if (movie == null || movie.getName() == null || movie.getName().isEmpty() || movie.getCoordinates() == null || movie.getOscarsCount() <= 0 || movie.getUsaBoxOffice() <= 0) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         movie.setId(idCounter.incrementAndGet());
@@ -66,7 +138,6 @@ public class MovieResource {
         return Response.ok(updatedMovie).build();
     }
 
-    // удаляет фильм по его id
     @DELETE
     @Path("/{id}")
     public Response deleteMovie(@PathParam("id") int id) {
@@ -77,4 +148,10 @@ public class MovieResource {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    @GET
+    @Path("/sum-usa-box-office")
+    public Response getSumUsaBoxOffice() {
+        long sum = movies.values().stream().mapToLong(Movie::getUsaBoxOffice).sum();
+        return Response.ok(sum).build();
+    }
 }
