@@ -51,4 +51,30 @@ public class MovieResource {
         }
         return Response.ok(movie).build();
     }
+
+    // Обновляет фильм по его id
+    @PUT
+    @Path("/{id}")
+    public Response updateMovie(@PathParam("id") int id, Movie updatedMovie) {
+        Movie existingMovie = movies.get(id);
+        if (existingMovie == null || updatedMovie == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        updatedMovie.setId(id);
+        updatedMovie.setCreationDate(existingMovie.getCreationDate());
+        movies.put(id, updatedMovie);
+        return Response.ok(updatedMovie).build();
+    }
+
+    // удаляет фильм по его id
+    @DELETE
+    @Path("/{id}")
+    public Response deleteMovie(@PathParam("id") int id) {
+        Movie movie = movies.remove(id);
+        if (movie == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 }
