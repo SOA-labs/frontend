@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Consumes(MediaType.APPLICATION_JSON)
 public class MovieResource {
     private static final Logger logger = LogManager.getLogger(MovieResource.class);
-    private static Map<Integer, Movie>  movies = new HashMap<>();
+    private static Map<Integer, Movie> movies = new HashMap<>();
     private static AtomicInteger idCounter = new AtomicInteger();
 
     // Получить все фильмы
