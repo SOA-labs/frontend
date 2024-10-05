@@ -128,7 +128,7 @@ public class MovieResource {
         return Response.ok(movie).build();
     }
 
-    // Обновляет фильм по его id
+    // Обновить фильм по его id
     @PUT
     @Path("/{id}")
     public Response updateMovie(@PathParam("id") int id, Movie updatedMovie) {
@@ -143,6 +143,7 @@ public class MovieResource {
         return Response.ok(updatedMovie).build();
     }
 
+    // Удалить фильма по его id
     @DELETE
     @Path("/{id}")
     public Response deleteMovie(@PathParam("id") int id) {
@@ -154,10 +155,31 @@ public class MovieResource {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    // Получить сумму сборов
     @GET
     @Path("/sum-usa-box-office")
     public Response getSumUsaBoxOffice() {
         long sum = movies.values().stream().mapToLong(Movie::getUsaBoxOffice).sum();
         return Response.ok(sum).build();
     }
+
+    // Получить фильмы, в названии которых содержится заданная подстрока
+    //    (фильтр по имени работает также бтв)
+    @GET
+    @Path("/movie-by-name")
+    public Response getMoviesByNameSubstring(@QueryParam("substring") String substring) {
+        if (substring == null || substring.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Substring cannot be empty").build();
+        }
+
+        logger.info("Fetching movies with name containing substring: {}", substring);
+
+        // Фильтрация
+        List<Movie> filteredMovies = movies.values().stream()
+                .filter(movie -> movie.getName().toLowerCase().contains(substring.toLowerCase()))
+                .toList();
+
+        return Response.ok(filteredMovies).build();
+    }
+
 }
