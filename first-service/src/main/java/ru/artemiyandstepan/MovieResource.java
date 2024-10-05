@@ -181,5 +181,4 @@ public class MovieResource {
 
         return Response.ok(filteredMovies).build();
     }
-
 }
