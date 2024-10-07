@@ -24,7 +24,7 @@ public class MovieResource {
     // Получить все фильмы
     @GET
     public Response getAllMovies(
-            @QueryParam("sortFields") List<String> sortFields,
+            @QueryParam("sortFields") String sortFields,
             @QueryParam("sortOrder") String sortOrder,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("size") @DefaultValue("10") int size,
@@ -72,8 +72,9 @@ public class MovieResource {
 
         // Сортировка по нескольким полям
         if (sortFields != null && !sortFields.isEmpty()) {
+            String[] fields = sortFields.split(",");
             filteredMovies.sort((movie1, movie2) -> {
-                for (String field : sortFields) {
+                for (String field : fields) {
                     int comparison = compareMovies(movie1, movie2, field);
                     logger.info("Sorted by: {}", field);
                     if (comparison != 0) {
