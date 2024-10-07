@@ -12,6 +12,8 @@ public class Location {
         this.name = name;
     }
 
+    public Location(){}
+
     public Double getX() {
         return x;
     }
