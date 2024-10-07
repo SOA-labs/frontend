@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.artemiyandstepan.model.MovieGenre;
 import ru.artemiyandstepan.model.MpaaRating;
+import ru.artemiyandstepan.model.Person;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,7 +48,7 @@ public class MovieResource {
         }
         if (minOscarsCount != null) {
             filteredMovies.removeIf(movie -> movie.getOscarsCount() < minOscarsCount);
-            logger.info("Applied filter minOscarsCount: {}", minOscarsCount );
+            logger.info("Applied filter minOscarsCount: {}", minOscarsCount);
         }
         if (maxOscarsCount != null) {
             filteredMovies.removeIf(movie -> movie.getOscarsCount() > maxOscarsCount);
@@ -181,5 +182,21 @@ public class MovieResource {
                 .toList();
 
         return Response.ok(filteredMovies).build();
+    }
+
+    // Получить список сценаристов, рост которых выше заданного
+    @GET
+    @Path("/screenwriters/taller-than")
+    public Response getScreenwritersTallerThan(@QueryParam("height") double height) {
+        logger.info("Fetching screenwriters taller than: {}", height);
+
+        List<Person> tallScreenwriters = movies.values().stream()
+                .map(Movie::getScreenwriter)
+                .filter(Objects::nonNull)
+                .filter(screenwriter -> screenwriter.getHeight() != null && screenwriter.getHeight() > height)
+                .distinct()                   // убираем дубликаты
+                .toList();
+
+        return Response.ok(tallScreenwriters).build();
     }
 }
