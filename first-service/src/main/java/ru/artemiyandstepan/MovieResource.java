@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.artemiyandstepan.model.MovieGenre;
 import ru.artemiyandstepan.model.MpaaRating;
-import ru.artemiyandstepan.model.Person;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -188,15 +187,15 @@ public class MovieResource {
     @GET
     @Path("/screenwriters/taller-than")
     public Response getScreenwritersTallerThan(@QueryParam("height") double height) {
-        logger.info("Fetching screenwriters taller than: {}", height);
+        logger.info("Fetching movies where screenwriters are taller than: {}", height);
 
-        List<Person> tallScreenwriters = movies.values().stream()
-                .map(Movie::getScreenwriter)
-                .filter(Objects::nonNull)
-                .filter(screenwriter -> screenwriter.getHeight() != null && screenwriter.getHeight() > height)
-                .distinct()                   // убираем дубликаты
-                .toList();
+        long movieCount = movies.values().stream()
+                .filter(movie -> movie.getScreenwriter() != null
+                        && movie.getScreenwriter().getHeight() != null
+                        && movie.getScreenwriter().getHeight() > height)
+                .count();
 
-        return Response.ok(tallScreenwriters).build();
+        return Response.ok(movieCount).build();
     }
+
 }
