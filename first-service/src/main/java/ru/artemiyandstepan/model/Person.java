@@ -18,6 +18,8 @@ public class Person {
         this.location = location;
     }
 
+    public Person(){}
+
     public String getName() {
         return name;
     }
