@@ -1,5 +1,6 @@
 package ru.artemiyandstepan.secondservice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.artemiyandstepan.secondservice.model.Movie;
 import ru.artemiyandstepan.secondservice.model.MovieDto;
+import ru.artemiyandstepan.secondservice.model.MovieGenre;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,11 +21,12 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class OscarService {
     private final HttpClient client = HttpClient.newHttpClient();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Value("${app.first-service.base-url.movies}")
     private String moviesUrl;
 
-    public MovieDto getAllMovies(int pageSize) {
+    public MovieDto getMoviesPageable(int pageSize) {
         URI uri = URI.create(moviesUrl + "?size=" + pageSize);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -35,9 +38,8 @@ public class OscarService {
         return futureResponse.thenApply(response -> {
             if (response.statusCode() == 200) {
                 try {
-                    ObjectMapper objectMapper = new ObjectMapper();
                     // Десериализация в MovieDto
-                    return objectMapper.readValue(response.body(), new TypeReference<MovieDto>() {
+                    return mapper.readValue(response.body(), new TypeReference<MovieDto>() {
                     });
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -50,13 +52,43 @@ public class OscarService {
         }).join();
     }
 
-    public List<Movie> getLoosers() {
-        MovieDto response = getAllMovies(10);
+    private MovieDto getAllMovies() {
+        MovieDto response = this.getMoviesPageable(100);
         if (response.getTotalItems() > response.getItems().size()) {
-            getAllMovies(response.getTotalItems() + 1);
+            this.getMoviesPageable(response.getTotalItems() + 1);
         }
+        return response;
+    }
+
+    public List<Movie> getLoosers() {
+        MovieDto response = getAllMovies();
         return response.getItems().stream()
                 .filter(movie -> movie.getOscarsCount() == 0)
                 .toList();
+    }
+
+    public void humiliateByGenre(MovieGenre genre) {
+        MovieDto response = getAllMovies();
+        response.getItems().stream()
+                .filter(movie -> movie.getGenre().equals(genre))
+                .filter(movie -> movie.getOscarsCount() != 0)
+                .peek(movie -> movie.setOscarsCount(0))
+                .forEach(this::voidUpdateMovies);
+    }
+
+    private void voidUpdateMovies(Movie movie) {
+        URI uri = URI.create(moviesUrl + "/" + movie.getId());
+        try {
+            String body = mapper.writeValueAsString(movie);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .PUT(HttpRequest.BodyPublishers.ofString(body))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            CompletableFuture<HttpResponse<String>> completableFuture = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            int code = completableFuture.thenApply(HttpResponse::statusCode).join();
+            System.out.println(code);
+        } catch (JsonProcessingException ignored) {
+        }
     }
 }

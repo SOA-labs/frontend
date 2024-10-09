@@ -7,11 +7,6 @@ import lombok.Setter;
 
 import java.util.Date;
 
-
-enum MovieGenre {
-    WESTERN, MUSICAL, ADVENTURE, TRAGEDY
-}
-
 enum MpaaRating {
     G, PG, PG_13, NC_17
 }
