@@ -116,7 +116,7 @@ public class MovieResource {
     // Создать фильм
     @POST
     public Response createMovie(Movie movie) {
-        if (checkMovie(movie)) {
+        if (!checkMovie(movie)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         movie.setId(idCounter.incrementAndGet());
@@ -146,7 +146,7 @@ public class MovieResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        if (checkMovie(updatedMovie)) {
+        if (!checkMovie(updatedMovie)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
