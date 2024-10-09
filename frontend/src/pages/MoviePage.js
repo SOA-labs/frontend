@@ -1,5 +1,3 @@
-// src/pages/MoviePage.js
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CreateMovieForm from "../components/forms/CreateMovieForm";
@@ -46,7 +44,7 @@ const MoviePage = () => {
                 <p>Loading...</p>
             ) : (
                 <>
-                    <CreateMovieForm onMovieCreated={fetchMovies} /> {/* Обновлено: Передаем fetchMovies */}
+                    <CreateMovieForm onMovieCreated={fetchMovies} /> {}
                     <DeleteMovieForm onMovieDeleted={fetchMovies} />
                     <UpdateMovieForm onMovieUpdated={fetchMovies} />
                     <MovieDetails />
@@ -60,7 +58,7 @@ const MoviePage = () => {
                     />
                 </>
             )}
-            {error && <p style={{ color: "red" }}>{error}</p>} {/* Отображаем ошибку, если есть */}
+            {error && <p style={{ color: "red" }}>{error}</p>} {}
         </div>
     );
 };

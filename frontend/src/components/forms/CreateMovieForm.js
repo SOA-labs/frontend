@@ -181,12 +181,12 @@ const CreateMovieForm = ({ onMovieCreated }) => {
             <select
                 name="genre"
                 value={movieData.genre}
-                onChange={(e) => handleNestedChange("screenwriter.genre", e.target.value)}
+                onChange={(e) => handleNestedChange("genre", e.target.value)}
                 required
             >
-                <option value="">Select Genre</option>
-                {Object.values(MpaaRating).map(mpaaRating => (
-                    <option key={mpaaRating} value={mpaaRating}>{mpaaRating}</option>
+                <option value="">Select MovieGenre</option>
+                {Object.values(MovieGenre).map(movieGenre => (
+                    <option key={movieGenre} value={movieGenre}>{movieGenre}</option>
                 ))}
             </select>
 
