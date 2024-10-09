@@ -94,6 +94,7 @@ public class MovieResource {
 
     private boolean checkMovie(Movie movie){
         if (movie == null || movie.getName() == null || movie.getName().isEmpty() || movie.getCoordinates() == null || movie.getOscarsCount() <= 0 || movie.getUsaBoxOffice() <= 0) {
+            logger.info("bad movie data: {}", movie);
             return false;
         }
         return checkScreenwriter(movie.getScreenwriter());
@@ -101,13 +102,19 @@ public class MovieResource {
 
     private boolean checkScreenwriter(Person screenwriter){
         if (screenwriter == null || screenwriter.getName() == null || screenwriter.getHeight() == null || screenwriter.getEyeColor() == null) {
+            logger.info("bad screenwriter data {}", screenwriter);
             return false;
         }
         return checkLocation(screenwriter.getLocation());
     }
 
     private boolean checkLocation(Location location){
-        return location != null && location.getName() != null && location.getX() != null;
+        if (location == null || location.getName() == null || location.getX() == null){
+            logger.info("bad location data: {}", location);
+            return false;
+        }
+
+        return true;
     }
 
 
