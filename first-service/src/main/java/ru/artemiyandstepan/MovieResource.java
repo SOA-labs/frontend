@@ -93,7 +93,7 @@ public class MovieResource {
     }
 
     private boolean checkMovie(Movie movie){
-        if (movie == null || movie.getName() == null || movie.getName().isEmpty() || movie.getCoordinates() == null || movie.getOscarsCount() <= 0 || movie.getUsaBoxOffice() <= 0) {
+        if (movie == null || movie.getName() == null || movie.getName().isEmpty() || movie.getCoordinates() == null || movie.getOscarsCount() < 0 || movie.getUsaBoxOffice() <= 0) {
             logger.info("bad movie data: {}", movie);
             return false;
         }
