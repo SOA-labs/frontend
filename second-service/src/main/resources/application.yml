@@ -1,0 +1,16 @@
+server:
+  port: ${APP_PORT:8090}
+
+spring:
+  application:
+    name:
+      second-service
+  config:
+    import: optional:file:.env[.properties]
+
+app:
+  api-version: 1
+  base-url: /v${app.api-version}/oscar
+  first-service:
+    base-url:
+      movies: ${FIRST_SERVICE_URL:http://localhost:8080}/movies
