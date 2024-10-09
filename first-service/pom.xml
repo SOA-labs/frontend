@@ -41,21 +41,6 @@
             <version>4.0.0</version>
         </dependency>
 
-<!-- Не работает :( todo: посмотреть как сделать так чтобы заработало-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.projectlombok/lombok &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.projectlombok</groupId>-->
-<!--            <artifactId>lombok</artifactId>-->
-<!--            <version>1.18.34</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-<!-- todo: разобраться почему не работает-->
-<!--        <dependency>-->
-<!--            <groupId>org.slf4j</groupId>-->
-<!--            <artifactId>slf4j-api</artifactId>-->
-<!--            <version>2.0.9</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
