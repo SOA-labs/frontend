@@ -3,12 +3,10 @@ package ru.artemiyandstepan;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import ru.artemiyandstepan.model.Movie;
+import ru.artemiyandstepan.model.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.artemiyandstepan.model.MovieGenre;
-import ru.artemiyandstepan.model.MpaaRating;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,18 +21,7 @@ public class MovieResource {
 
     // Получить все фильмы
     @GET
-    public Response getAllMovies(
-            @QueryParam("sortFields") String sortFields,
-            @QueryParam("sortOrder") String sortOrder,
-            @QueryParam("page") @DefaultValue("0") int page,
-            @QueryParam("size") @DefaultValue("10") int size,
-            @QueryParam("name") String nameFilter,
-            @QueryParam("minOscarsCount") Long minOscarsCount,
-            @QueryParam("maxOscarsCount") Long maxOscarsCount,
-            @QueryParam("minBoxOffice") Integer minBoxOffice,
-            @QueryParam("maxBoxOffice") Integer maxBoxOffice,
-            @QueryParam("genre") MovieGenre genreFilter,
-            @QueryParam("mpaaRating") MpaaRating mpaaRatingFilter) {
+    public Response getAllMovies(@QueryParam("sortFields") String sortFields, @QueryParam("sortOrder") String sortOrder, @QueryParam("page") @DefaultValue("0") int page, @QueryParam("size") @DefaultValue("10") int size, @QueryParam("name") String nameFilter, @QueryParam("minOscarsCount") Long minOscarsCount, @QueryParam("maxOscarsCount") Long maxOscarsCount, @QueryParam("minBoxOffice") Integer minBoxOffice, @QueryParam("maxBoxOffice") Integer maxBoxOffice, @QueryParam("genre") MovieGenre genreFilter, @QueryParam("mpaaRating") MpaaRating mpaaRatingFilter) {
 
         logger.info("Fetching all movies with filters");
 
@@ -105,10 +92,31 @@ public class MovieResource {
         };
     }
 
+    private boolean checkMovie(Movie movie){
+        if (movie == null || movie.getName() == null || movie.getName().isEmpty() || movie.getCoordinates() == null || movie.getOscarsCount() <= 0 || movie.getUsaBoxOffice() <= 0) {
+            return false;
+        }
+        return checkScreenwriter(movie.getScreenwriter());
+    }
+
+    private boolean checkScreenwriter(Person screenwriter){
+        if (screenwriter == null || screenwriter.getName() == null || screenwriter.getHeight() == null || screenwriter.getEyeColor() == null) {
+            return false;
+        }
+        return checkLocation(screenwriter.getLocation());
+    }
+
+    private boolean checkLocation(Location location){
+        return location != null && location.getName() != null && location.getX() != null;
+    }
+
+
+
+
     // Создать фильм
     @POST
     public Response createMovie(Movie movie) {
-        if (movie == null || movie.getName() == null || movie.getName().isEmpty() || movie.getCoordinates() == null || movie.getOscarsCount() <= 0 || movie.getUsaBoxOffice() <= 0) {
+        if (checkMovie(movie)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         movie.setId(idCounter.incrementAndGet());
@@ -137,6 +145,11 @@ public class MovieResource {
         if (existingMovie == null || updatedMovie == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        if (checkMovie(updatedMovie)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
         updatedMovie.setId(id);
         updatedMovie.setCreationDate(existingMovie.getCreationDate());
         movies.put(id, updatedMovie);
@@ -176,9 +189,7 @@ public class MovieResource {
         logger.info("Fetching movies with name containing substring: {}", substring);
 
         // Фильтрация
-        List<Movie> filteredMovies = movies.values().stream()
-                .filter(movie -> movie.getName().toLowerCase().contains(substring.toLowerCase()))
-                .toList();
+        List<Movie> filteredMovies = movies.values().stream().filter(movie -> movie.getName().toLowerCase().contains(substring.toLowerCase())).toList();
 
         return Response.ok(filteredMovies).build();
     }
@@ -189,11 +200,7 @@ public class MovieResource {
     public Response getScreenwritersTallerThan(@QueryParam("height") double height) {
         logger.info("Fetching movies where screenwriters are taller than: {}", height);
 
-        long movieCount = movies.values().stream()
-                .filter(movie -> movie.getScreenwriter() != null
-                        && movie.getScreenwriter().getHeight() != null
-                        && movie.getScreenwriter().getHeight() > height)
-                .count();
+        long movieCount = movies.values().stream().filter(movie -> movie.getScreenwriter() != null && movie.getScreenwriter().getHeight() != null && movie.getScreenwriter().getHeight() > height).count();
 
         return Response.ok(movieCount).build();
     }
