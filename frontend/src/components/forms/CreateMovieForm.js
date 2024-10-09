@@ -193,7 +193,7 @@ const CreateMovieForm = ({ onMovieCreated }) => {
             <select
                 name="mpaaRating"
                 value={movieData.screenwriter.mpaaRating}
-                onChange={(e) => handleNestedChange("screenwriter.mpaaRating", e.target.value)}
+                onChange={(e) => handleNestedChange("mpaaRating", e.target.value)}
                 required
             >
                 <option value="">Select MPAA Rating</option>
