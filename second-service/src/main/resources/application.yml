@@ -13,4 +13,7 @@ app:
   base-url: /v${app.api-version}/oscar
   first-service:
     base-url:
-      movies: ${FIRST_SERVICE_URL:http://localhost:8080}/movies
+      movies: ${FIRST_SERVICE_URL:http://localhost:8080/lab2-1.0-SNAPSHOT/api}/movies
+logging:
+  level:
+    root: info

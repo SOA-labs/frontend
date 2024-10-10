@@ -27,6 +27,7 @@ public class OscarService {
     private String moviesUrl;
 
     public MovieDto getMoviesPageable(int pageSize) {
+        log.info("Request for {} movies from {}", pageSize, moviesUrl);
         URI uri = URI.create(moviesUrl + "?size=" + pageSize);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -61,6 +62,7 @@ public class OscarService {
     }
 
     public List<Movie> getLoosers() {
+        log.info("Request for loosers");
         MovieDto response = getAllMovies();
         return response.getItems().stream()
                 .filter(movie -> movie.getOscarsCount() == 0)
@@ -68,6 +70,7 @@ public class OscarService {
     }
 
     public void humiliateByGenre(MovieGenre genre) {
+        log.info("Request for humiliate by genre");
         MovieDto response = getAllMovies();
         response.getItems().stream()
                 .filter(movie -> movie.getGenre().equals(genre))
@@ -77,6 +80,7 @@ public class OscarService {
     }
 
     private void voidUpdateMovies(Movie movie) {
+        log.info("Updating movie with id={}", movie.getId());
         URI uri = URI.create(moviesUrl + "/" + movie.getId());
         try {
             String body = mapper.writeValueAsString(movie);
