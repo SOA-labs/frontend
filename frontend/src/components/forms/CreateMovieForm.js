@@ -119,7 +119,7 @@ const CreateMovieForm = ({ onMovieCreated }) => {
         setError(null);
 
         try {
-            await axios.post(`/lab2-1.0-SNAPSHOT/api/movies`, movieData);
+            await axios.post(`/web-module-1.0-SNAPSHOT/api/movies`, movieData);
             onMovieCreated(); // Вызов функции для обновления таблицы или списка
             setMovieData({
                 name: "",

@@ -11,7 +11,7 @@ const MovieDetails = () => {
         setIsFetching(true);
         setError(null);
         try {
-            const response = await axios.get(`/lab2-1.0-SNAPSHOT/api/movies/${movieId}`);
+            const response = await axios.get(`/web-module-1.0-SNAPSHOT/api/movies/${movieId}`);
             setMovieData(response.data);
         } catch (err) {
             setError("Error fetching movie data. Please check the ID.");

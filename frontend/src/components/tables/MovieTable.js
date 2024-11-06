@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-
 const MovieTable = () => {
-    const [movies, setMovies] = useState([]);
+    const [movies, setMovies] = useState([]); // Массив для хранения фильмов
     const [filters, setFilters] = useState({
         name: "",
         minOscarsCount: null,
@@ -12,18 +11,19 @@ const MovieTable = () => {
         maxBoxOffice: null,
         genre: "",
         mpaaRating: ""
-    });
-    const [sortFields, setSortFields] = useState([]);
-    const [sortOrder, setSortOrder] = useState("asc");
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
-    const [totalMovies, setTotalMovies] = useState(0);
+    }); // Состояние фильтров
+    const [sortFields, setSortFields] = useState([]); // Состояние полей сортировки
+    const [sortOrder, setSortOrder] = useState("asc"); // Состояние порядка сортировки
+    const [page, setPage] = useState(0); // Текущая страница
+    const [size, setSize] = useState(10); // Количество записей на странице
+    const [totalMovies, setTotalMovies] = useState(0); // Общее количество фильмов
 
     useEffect(() => {
-        fetchMovies();
+        fetchMovies(); // Загружаем фильмы при изменении состояния фильтров, сортировки и страницы
     }, [sortFields, sortOrder, page, size, filters]);
 
     const fetchMovies = async () => {
+        // Формируем параметры для запроса
         const params = {
             sortFields: sortFields.join(",") || undefined,
             sortOrder: sortOrder || undefined,
@@ -39,12 +39,15 @@ const MovieTable = () => {
         };
 
         try {
-            const response = await axios.get("/lab2-1.0-SNAPSHOT/api/movies", { params });
-            if (Array.isArray(response.data.items)) {
-                setMovies(response.data.items);
-                setTotalMovies(response.data.totalItems); // Обновляем общее количество фильмов
+            // Получаем данные о фильмах с сервера
+            const response = await axios.get("/web-module-1.0-SNAPSHOT/api/movies", { params });
+            console.log("Response data:", response.data); // Логируем ответ для отладки
+            if (Array.isArray(response.data)) {
+                // Если получаем массив, обновляем состояния
+                setMovies(response.data);
+                setTotalMovies(response.data.length); // Обновляем общее количество фильмов
             } else {
-                console.error("Expected an array of movies in items, but got:", response.data.items);
+                console.error("Expected an array of movies, but got:", response.data);
                 setMovies([]);
             }
         } catch (error) {
@@ -55,25 +58,25 @@ const MovieTable = () => {
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-        setFilters(prev => ({ ...prev, [name]: value }));
+        setFilters(prev => ({ ...prev, [name]: value })); // Обновляем фильтры
     };
 
     const handleSortChange = (e) => {
         const field = e.target.value;
         if (sortFields.includes(field)) {
-            setSortFields(sortFields.filter(f => f !== field)); // Убираем поле, если оно уже выбрано
+            setSortFields(sortFields.filter(f => f !== field)); // Убираем поле сортировки
         } else {
             setSortFields([...sortFields, field]); // Добавляем поле в сортировку
         }
     };
 
     const toggleSortOrder = () => {
-        setSortOrder(prev => (prev === "asc" ? "desc" : "asc"));
+        setSortOrder(prev => (prev === "asc" ? "desc" : "asc")); // Переключаем порядок сортировки
     };
 
     const handleSizeChange = (e) => {
         setSize(e.target.value);
-        setPage(0); // Сбрасываем страницу при изменении размера
+        setPage(0); // Сбрасываем страницу на первую при изменении размера
     };
 
     return (
