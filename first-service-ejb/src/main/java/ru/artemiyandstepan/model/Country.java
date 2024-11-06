@@ -1,5 +1,7 @@
 package ru.artemiyandstepan.model;
 
-public enum Country {
+import java.io.Serializable;
+
+public enum Country implements Serializable {
     GERMANY, VATICAN, ITALY, SOUTH_KOREA, JAPAN
 }

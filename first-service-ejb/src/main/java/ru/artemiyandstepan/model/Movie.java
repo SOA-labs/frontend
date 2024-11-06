@@ -1,9 +1,10 @@
 package ru.artemiyandstepan.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 
-public class Movie {
+public class Movie implements Serializable {
     private int id;
     private String name;
     private Coordinates coordinates;

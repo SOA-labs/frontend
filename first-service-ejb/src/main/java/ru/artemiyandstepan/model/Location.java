@@ -1,6 +1,8 @@
 package ru.artemiyandstepan.model;
 
-public class Location {
+import java.io.Serializable;
+
+public class Location implements Serializable {
     private Double x;
     private float y;
     private String name;

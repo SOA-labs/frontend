@@ -1,7 +1,9 @@
 package ru.artemiyandstepan.model;
 
 
-public class Coordinates {
+import java.io.Serializable;
+
+public class Coordinates implements Serializable {
     private long x;
     private Long y;
 

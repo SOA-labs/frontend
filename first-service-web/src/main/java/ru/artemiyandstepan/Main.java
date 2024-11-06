@@ -8,7 +8,7 @@ import java.util.Set;
 
 @ApplicationPath("/api")
 public class Main extends Application {
-//    public static void main(String[] args) {
+    //    public static void main(String[] args) {
 //        System.out.println("Hello world!");
 //    }
     @Override
@@ -22,5 +22,3 @@ public class Main extends Application {
         return resources;
     }
 }
-
-
