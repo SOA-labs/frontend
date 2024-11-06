@@ -40,7 +40,7 @@ const MovieTable = () => {
 
         try {
             // Получаем данные о фильмах с сервера
-            const response = await axios.get("/web-module-1.0-SNAPSHOT/api/movies", { params });
+            const response = await axios.get("/first-service-web-1.0-SNAPSHOT/api/movies", { params });
             console.log("Response data:", response.data); // Логируем ответ для отладки
             if (Array.isArray(response.data)) {
                 // Если получаем массив, обновляем состояния

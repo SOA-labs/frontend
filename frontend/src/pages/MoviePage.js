@@ -22,7 +22,7 @@ const MoviePage = () => {
     const fetchMovies = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get("/web-module-1.0-SNAPSHOT/api/movies", {
+            const response = await axios.get("/first-service-web-1.0-SNAPSHOT/api/movies", {
                 params: {
                     page: currentPage,
                     size: pageSize,
@@ -40,7 +40,7 @@ const MoviePage = () => {
 
     const fetchUsaBoxOfficeSum = async () => {
         try {
-            const response = await axios.get("/web-module-1.0-SNAPSHOT/api/movies/sum-usa-box-office");
+            const response = await axios.get("/first-service-web-1.0-SNAPSHOT/api/movies/sum-usa-box-office");
             setUsaBoxOfficeSum(response.data);
         } catch (err) {
             console.error("Error fetching USA box office sum:", err);
@@ -51,7 +51,7 @@ const MoviePage = () => {
     // Функция для поиска фильмов по подстроке
     const searchMoviesByName = async (substring) => {
         try {
-            const response = await axios.get("/web-module-1.0-SNAPSHOT/api/movies/movie-by-name", {
+            const response = await axios.get("/first-service-web-1.0-SNAPSHOT/api/movies/movie-by-name", {
                 params: { substring },
             });
             setSearchResults(response.data); // Сохранение результатов поиска

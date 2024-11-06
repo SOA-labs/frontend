@@ -12,7 +12,7 @@ const DeleteMovieForm = ({ onMovieDeleted }) => {
         setError(null);
 
         try {
-            await axios.delete(`/web-module-1.0-SNAPSHOT/api/movies/${movieId}`);
+            await axios.delete(`/first-service-web-1.0-SNAPSHOT/api/movies/${movieId}`);
             onMovieDeleted(); // Вызов функции для обновления таблицы
             setMovieId(""); // Сброс поля ID
         } catch (err) {

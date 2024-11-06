@@ -46,7 +46,7 @@ const UpdateMovieForm = ({ onMovieUpdated }) => {
         setIsFetching(true);
         setError(null);
         try {
-            const response = await axios.get(`/web-module-1.0-SNAPSHOT/api/movies/${id}`);
+            const response = await axios.get(`/first-service-web-1.0-SNAPSHOT/api/movies/${id}`);
             const movie = response.data;
 
             setMovieData(movie);
@@ -99,7 +99,7 @@ const UpdateMovieForm = ({ onMovieUpdated }) => {
         setError(null);
 
         try {
-            await axios.put(`/web-module-1.0-SNAPSHOT/api/movies/${movieId}`, movieData);
+            await axios.put(`/first-service-web-1.0-SNAPSHOT/api/movies/${movieId}`, movieData);
             onMovieUpdated(); // Вызов функции для обновления таблицы
             setMovieId(""); // Сброс поля ID
             setMovieData({
