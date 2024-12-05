@@ -14,7 +14,7 @@ const SecondServicePage = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.get("/second-service-0.1/v1/oscar/screenwriters/get-loosers");
+            const response = await axios.get("/bridge-1.0.0/v1/oscar/screenwriters/get-loosers");
             setLosers(response.data);
         } catch (err) {
             console.error("Error fetching losers:", err);
@@ -28,7 +28,7 @@ const SecondServicePage = () => {
         setIsLoading(true);
         setError(null);
         try {
-            await axios.post(`/second-service-0.1/v1/oscar/directors/humiliate-by-genre/${genre}`);
+            await axios.post(`/bridge-1.0.0/v1/oscar/directors/humiliate-by-genre/${genre}`);
             fetchLosers();
         } catch (err) {
             console.error("Error humiliating by genre:", err);
